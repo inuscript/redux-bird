@@ -3,7 +3,7 @@ function isPromise(val) {
   return val && typeof val.then === 'function';
 }
 
-export const filterType = (...types) => {
+export const ofType = (...types) => {
   return fn => action => {
     return types.includes(action.type) ? fn(action) : null
   }
