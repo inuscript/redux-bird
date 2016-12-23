@@ -1,0 +1,19 @@
+{
+  "name": "redux-promise-epic",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "inuscript <inuscript@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "axios": "^0.15.3",
+    "babel-preset-latest": "^6.16.0",
+    "expect": "^1.20.2",
+    "jest": "^18.0.0",
+    "mocha": "^3.2.0",
+    "redux": "^3.6.0",
+    "redux-mock-store": "^1.2.1"
+  }
+}
