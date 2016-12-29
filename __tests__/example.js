@@ -2,10 +2,11 @@ const expect = require("expect")
 const axios = require("axios")
 const { createPromiseEpicMiddleware, ofType } = require('../')
 
+const payloadMock = { id: 123 }
 // api-utils
 const mockAdapter = (config) => {
   return new Promise((resolve, reject) => {
-    resolve({data: { id: 123 }, status: 200 })
+    resolve({data: payloadMock, status: 200 })
   })
 }
 
@@ -17,8 +18,8 @@ const fakeApi = axios.create({
 const FETCH_USER = "FETCH_USER"
 const FETCH_USER_FULFILLED = "FETCH_USER_FULFILLED"
 
-const fetchUser = _ => {
-  return { type: FETCH_USER}
+const fetchUser = () => {
+  return { type: FETCH_USER }
 }
 const fetchUserFulfilled = payload => {
   return { type: FETCH_USER_FULFILLED, payload }
@@ -40,14 +41,16 @@ const mockStore = configureMockStore([promiseEpicMiddleware]);
 describe('fetchUserEpic', () => {
   it('produces the user model', (done) => {
     const store = mockStore();
-    const actions = store.dispatch(fetchUser())
+    const actions = store.dispatch(fetchUser(10))
     Promise.all(actions)
       .then( x => {
         expect(store.getActions()).toEqual([
           { type: FETCH_USER },
-          { type: FETCH_USER_FULFILLED, payload }
+          { type: FETCH_USER_FULFILLED, payload: payloadMock }
         ])
         done()
+      }).catch( e => {
+        console.log(e)
       })
   })
 })
