@@ -26,11 +26,13 @@ export function createBirdMiddleware(birds){
     return toArray(birds)
       .map( bird => bird(action) )
       .filter( maybePromise => isPromise(maybePromise))
-      .map( promise => promise.then( (maybeActions) => toArray(maybeActions) ) )
-      .filter(maybeAction => isAction(maybeAction))
-      .map( (action) => {
-        store.dispatch(action)
-      })
+      .map( promise => promise
+        .then( (maybeActions) =>
+          toArray(maybeActions)
+            .filter(maybeAction => isAction(maybeAction))
+            .map( (action) => store.dispatch(action))
+          )
+        )
   }
   return birdMiddleware
 }

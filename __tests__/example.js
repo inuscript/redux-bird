@@ -26,11 +26,13 @@ const fetchUserFulfilled = payload => {
 }
 
 // Promise
-const fetchUserBird = ofType(FETCH_USER)(action => fakeApi.get(`/api/users/${action.payload}`) )
-  .then( ({ data }) => {
-    return fetchUserFulfilled(data)
-  })
-console.log(fetchUserBird)
+const fetchUserBird = ofType(FETCH_USER)(action =>
+  fakeApi
+    .get(`/api/users/${action.payload}`)
+    .then( ({ data }) => {
+      return fetchUserFulfilled(data)
+    })
+  )
 
 /////////
 const configureMockStore = require('redux-mock-store').default
