@@ -34,3 +34,6 @@ const store = configurStore( applyMiddleware(birdMiddleware) );
 
 ### `createBirdMiddleware( promises: [Promise] )`
 Generate promise
+
+
+#### `createPromise(...types, promiseGeneratorFunction)`
