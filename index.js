@@ -1,7 +1,11 @@
 
-function isPromise(val) {
-  return val && typeof val.then === 'function';
-}
+const isPromise = (val) => (val && typeof val.then === 'function')
+
+const isAction = (action) => (action && typeof action.type === 'string')
+
+const toArray = (item) => (!Array.isArray(item))
+  ? [item]
+  : item
 
 export const ofType = (...types) => {
   return fn => action => {
@@ -9,19 +13,24 @@ export const ofType = (...types) => {
   }
 }
 
-export function createPromiseEpicMiddleware(promiseEpics){
-  if(!Array.isArray(promiseEpics)){
-    promiseEpics = [promiseEpics]
+const dispatchIfAction = (action, store) => {
+  if(!isAction(result)){
+    return null
   }
-  const promiseEpicMiddleware = store => next => action => {
+  store.dispatch(result)
+}
+
+export function createBirdMiddleware(birds){
+  const birdMiddleware = store => next => action => {
     next(action)
-    return promiseEpics.map( promiseEpic => promiseEpic(action) )
+    return toArray(birds)
+      .map( bird => bird(action) )
       .filter( maybePromise => isPromise(maybePromise))
-      .map( promise => {
-        return promise.then( (result) => {
-          store.dispatch(result)
-        })
+      .map( promise => promise.then( (maybeActions) => toArray(maybeActions) ) )
+      .filter(maybeAction => isAction(maybeAction))
+      .map( (action) => {
+        store.dispatch(action)
       })
   }
-  return promiseEpicMiddleware
+  return birdMiddleware
 }

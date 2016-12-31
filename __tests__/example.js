@@ -1,6 +1,6 @@
 const expect = require("expect")
 const axios = require("axios")
-const { createPromiseEpicMiddleware, ofType } = require('../')
+const { createBirdMiddleware, ofType } = require('../')
 
 const payloadMock = { id: 123 }
 // api-utils
@@ -25,18 +25,17 @@ const fetchUserFulfilled = payload => {
   return { type: FETCH_USER_FULFILLED, payload }
 }
 
-// epic
-const fetchUserPromiseEpic = ofType(FETCH_USER)(action => {
-  return fakeApi.get(`/api/users/${action.payload}`)
-    .then( ({ data }) => {
-      return fetchUserFulfilled(data)
-    })
-})
+// Promise
+const fetchUserBird = ofType(FETCH_USER)(action => fakeApi.get(`/api/users/${action.payload}`) )
+  .then( ({ data }) => {
+    return fetchUserFulfilled(data)
+  })
+console.log(fetchUserBird)
 
 /////////
 const configureMockStore = require('redux-mock-store').default
-const promiseEpicMiddleware = createPromiseEpicMiddleware([fetchUserPromiseEpic]);
-const mockStore = configureMockStore([promiseEpicMiddleware]);
+const birdMiddleware = createBirdMiddleware([fetchUserBird]);
+const mockStore = configureMockStore([birdMiddleware]);
 
 describe('fetchUserEpic', () => {
   it('produces the user model', (done) => {
