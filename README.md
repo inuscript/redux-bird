@@ -7,7 +7,7 @@
 ```js
 const axios = require('axios')
 const { configurStore, applyMiddleware } = require('redux')
-const { createBirdMiddleware, ofType } = require('../')
+const { createBirdMiddleware, createPromise } = require('../')
 
 // actions
 const FETCH_USER = "FETCH_USER"
@@ -21,9 +21,9 @@ const fetchUserFulfilled = payload => {
 }
 
 // promise
-const fetchUserPromise = ofType(FETCH_USER)
-  .then(action => axios.get(`/api/users/`) )
-  .then( ({ data }) => fetchUserFulfilled(data) )
+const fetchUserPromise = createPromise(FETCH_USER, action =>
+  axios.get(`/api/users/`) )
+    .then( ({ data }) => fetchUserFulfilled(data) )
 
 const birdMiddleware = createBirdMiddleware(fetchUserPromise);
 const store = configurStore( applyMiddleware(birdMiddleware) );

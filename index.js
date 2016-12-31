@@ -7,9 +7,18 @@ const toArray = (item) => (!Array.isArray(item))
   ? [item]
   : item
 
-export const ofType = (...types) => {
+const emptyFn = () => {}
+
+// type, type, type..., function
+export const createPromise = (...params) => {
+  const fn = params.pop()
+  const types = params
+  return _createPromise(types, fn)
+}
+
+const _createPromise = (types, fn) => {
   return fn => action => {
-    return types.includes(action.type) ? fn(action) : null
+    return types.includes(action.type) ? fn(action) : emptyFn()
   }
 }
 
@@ -20,19 +29,20 @@ const dispatchIfAction = (action, store) => {
   store.dispatch(result)
 }
 
-export function createBirdMiddleware(birds){
+const resolvePromise = (store, promise) => {
+  return promise.then( (maybeActions) =>
+    toArray(maybeActions)
+      .filter( maybeAction => isAction(maybeAction))
+      .map( action => store.dispatch(action))
+}
+
+export function createBirdMiddleware(promiseCreators){
   const birdMiddleware = store => next => action => {
     next(action)
-    return toArray(birds)
-      .map( bird => bird(action) )
+    return toArray(promiseCreators)
+      .map( promiseCreator => promiseCreator(action) )
       .filter( maybePromise => isPromise(maybePromise))
-      .map( promise => promise
-        .then( (maybeActions) =>
-          toArray(maybeActions)
-            .filter(maybeAction => isAction(maybeAction))
-            .map( (action) => store.dispatch(action))
-          )
-        )
+      .map( promise => resolvePromise(store, promise) )
   }
   return birdMiddleware
 }

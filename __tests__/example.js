@@ -1,6 +1,6 @@
 const expect = require("expect")
 const axios = require("axios")
-const { createBirdMiddleware, ofType } = require('../')
+const { createBirdMiddleware, createPromise } = require('../')
 
 const payloadMock = { id: 123 }
 // api-utils
@@ -26,7 +26,7 @@ const fetchUserFulfilled = payload => {
 }
 
 // Promise
-const fetchUserBird = ofType(FETCH_USER)(action =>
+const fetchUserBird = createPromise(FETCH_USER, action =>
   fakeApi
     .get(`/api/users/${action.payload}`)
     .then( ({ data }) => {
